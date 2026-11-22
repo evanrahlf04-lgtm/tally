@@ -1132,3 +1132,10 @@ body{background:var(--wash) no-repeat,var(--bg)!important}
 .dcs button:not(.on):hover{color:var(--ink)}
 .dsy{width:22px;height:22px;border-radius:50%;background:var(--forest);color:var(--forest-ink);display:grid;place-items:center;font-size:12px;font-weight:600;margin-left:-6px}
 @media(max-width:360px){.dcs button{padding:0 10px}}
+
+/* Section bar: one white pill holding the tabs, current one in lime, no band behind it */
+.jump{display:inline-flex;width:max-content;max-width:100%;align-self:flex-start;gap:4px;padding:5px;margin:0;border-radius:99px;background:color-mix(in srgb,var(--surface) 86%,transparent);border:1px solid var(--border);box-shadow:0 6px 20px rgba(20,33,26,.06);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.jump button{min-height:38px;padding:0 18px;border:0;background:transparent;color:var(--mute);font-size:14px;font-weight:500}
+.jump button:hover{background:var(--soft);color:var(--ink)}
+.jump button.on{background:var(--lime);border:0;color:#14211a;font-weight:600}
+.jump{justify-self:start;position:sticky;top:12px;z-index:8;overflow-x:auto}
