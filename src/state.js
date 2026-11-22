@@ -9,7 +9,7 @@ const isCur=()=>cur.y===now.getFullYear()&&cur.m===now.getMonth();
 const isPast=()=>cur.y<now.getFullYear()||(cur.y===now.getFullYear()&&cur.m<now.getMonth());
 const dim=()=>new Date(cur.y,cur.m+1,0).getDate();
 const STARTER=[['Rent','house'],['Electricity','bolt'],['Water','drop'],['Internet','wifi'],['Transportation','bus'],['Groceries','cart'],['Eating out','fork'],['Health','heart'],['Shopping','shirt'],['Other','tag']];
-const emptyState=()=>({income:0,cats:STARTER.map((c,i)=>({id:'c'+i,name:c[0],budget:0,due:0,icon:c[1],hue:HUES[i%HUES.length]})),tx:[],goals:[],bills:[],debts:[],pay:[]});
+const emptyState=()=>({income:0,cats:STARTER.map((c,i)=>({id:'c'+i,name:c[0],budget:0,due:0,icon:c[1],hue:HUES[i%HUES.length]})),tx:[],goals:[],bills:[],debts:[],pay:[],name:'',setup:false});
 let S=emptyState();
 function norm(old){const t=Object.assign({},old||S.tax||{});
  // Older data had no link flag: keep an existing income as it was, and start new accounts linked to take-home pay.
@@ -24,7 +24,7 @@ function norm(old){const t=Object.assign({},old||S.tax||{});
   else if(S.tax.link&&S.tax.gross>0)S.base='salary';
   else{S.base='amount';S.start={amount:S.income||0,repeat:true,date:T}}}
  S.start=Object.assign({amount:0,repeat:false,date:T},S.start||{});S.tax.link=S.base==='salary';
- S.tax.cut=Object.assign({sss:'split',ph:'split',pi:'split',tax:'15'},S.tax.cut||{});S.cats=S.cats||[];S.bills=S.bills||[];S.debts=S.debts||[];S.pay=S.pay||[];S.currency=S.currency||'PHP';setCurrency(S.currency);S.alerts=Object.assign({on:true,warn:80},S.alerts||{});S.debtPlan=Object.assign({extra:0,method:'avalanche'},S.debtPlan||{});S.goals=S.goals||[];S.tx=S.tx||[];S.income=S.income||0;syncGoals()}
+ S.tax.cut=Object.assign({sss:'split',ph:'split',pi:'split',tax:'15'},S.tax.cut||{});S.cats=S.cats||[];S.bills=S.bills||[];S.debts=S.debts||[];S.pay=S.pay||[];S.currency=S.currency||'PHP';S.name=S.name||'';if(typeof S.setup!=='boolean')S.setup=!!(S.income||(S.start&&S.start.amount)||S.tx.length||S.pay.length||S.goals.length||S.bills.length||S.debts.length||(S.tax&&S.tax.gross>0)||S.cats.some(c=>c.budget>0));setCurrency(S.currency);S.alerts=Object.assign({on:true,warn:80},S.alerts||{});S.debtPlan=Object.assign({extra:0,method:'avalanche'},S.debtPlan||{});S.goals=S.goals||[];S.tx=S.tx||[];S.income=S.income||0;syncGoals()}
 // Saved so far = what was already saved before tracking (base) plus every contribution logged for the goal.
 function syncGoals(){S.goals.forEach(g=>{if(g.base===undefined)g.base=g.saved||0;g.saved=Math.max(0,g.base+S.tx.reduce((a,t)=>a+(t.goalId===g.id&&t.type==='expense'?t.amount:0),0))})}
 norm();

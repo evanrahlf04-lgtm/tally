@@ -1,5 +1,6 @@
 import {$} from './util.js';
-import {view,cur} from './state.js';
+import {view,cur,user} from './state.js';
+import {needsSetup,showSetup} from './setup.js';
 import {money} from './ui.js';
 import {buildJump} from './jump.js';
 import {home} from './views/home.js';
@@ -34,6 +35,7 @@ function countUp(root){
 // After a re-render the focused control is rebuilt, so find the same one again and focus it.
 function focusKey(el){const m=$('#main');if(!el||!m||!m.contains(el))return null;if(el.id)return '#'+el.id;for(const a of el.attributes)if(a.name.startsWith('data-')&&a.name!=='data-sec')return '['+a.name+'="'+CSS.escape(a.value)+'"]';return null}
 function render(){
+ if(user&&needsSetup())return showSetup();
  const main=$('#main'),month=`${cur.y}-${cur.m}`;
  const kind=lastView!==view?'enter':lastMonth!==month?'swap':'';
  const fk=lastView===view?focusKey(document.activeElement):null;

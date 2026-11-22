@@ -76,7 +76,7 @@ document.addEventListener('click',e=>{const t=e.target,A=t.closest('[data-act]')
  if(act==='addbill')return billModal({id:uid(),name:'',amount:0,rep:'monthly',due:0,catId:S.cats[0]&&S.cats[0].id,from:''},true);
  if(act==='addcat')return catModal({id:uid(),name:'',budget:0,due:0,icon:'tag',hue:HUES[S.cats.length%HUES.length]},true);
  if(act==='addgoal')return goalModal({id:uid(),name:'',target:0,saved:0,base:0},true);
- if(act==='wipe'){if(!confirm('Delete all your budget data? This cannot be undone.'))return;setS(emptyState());norm();save();toast('All data deleted');return render()}
+ if(act==='reset'){if(!confirm('Reset everything? This deletes your transactions, budgets, bills, debts, goals, pay log and settings, then starts setup again. This cannot be undone.'))return;setS(emptyState());norm();save();toast('Everything was reset');return render()} if(act==='wipe'){if(!confirm('Delete all your budget data? This cannot be undone.'))return;setS(emptyState());norm();save();toast('All data deleted');return render()}
  if(act==='signout')return signOut();
  if(act==='more'){setTl(tl+PAGE());return refreshList()}
  if(act==='theme'){toggleTheme();return accountSheet()}
@@ -101,3 +101,6 @@ document.addEventListener('touchend',e=>{if(skip)return;const p=e.changedTouches
 const typingEl=e=>e.target&&e.target.matches&&e.target.matches('#main input:not([type=checkbox]):not([type=radio]),#main textarea');
 document.addEventListener('focusin',e=>{if(typingEl(e))document.body.classList.add('typing')});
 document.addEventListener('focusout',e=>{if(typingEl(e))setTimeout(()=>{if(!typingEl({target:document.activeElement}))document.body.classList.remove('typing')},50)});
+
+// Type chips above the transaction list (All, Expenses, Income).
+document.addEventListener('click',e=>{const b=e.target.closest('[data-ftc]');if(!b)return;setFt(b.dataset.ftc);setTl(PAGE());document.querySelectorAll('#ftc button').forEach(x=>x.classList.toggle('on',x===b));refreshList()});

@@ -23,7 +23,7 @@ async function handleSession(session){
  if(recovering)return;
  if(!session){
   setUser(null);setSaveHook(null);adopt(null,0);
-  app().hidden=true;showAuth('signin');return;
+  app().hidden=true;showAuth('welcome');return;
  }
  const u={id:session.user.id,email:session.user.email};
  if(user&&user.id===u.id){hideAuth();app().hidden=false;return}
