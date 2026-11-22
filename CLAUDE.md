@@ -21,7 +21,9 @@ Vanilla JS ES modules, Vite, no framework. Pages are built as HTML strings and d
 - `src/modals.js` dialogs (add/edit transaction, category, goal, account sheet)
 - `src/jump.js` sticky "jump to section" bar built from `data-sec` / panel headings
 - `src/theme.js` light/dark toggle, theme-color meta
-- `src/views/` home, budgets, goals, report, tax (the Salary page)
+- `src/views/` home (Overview dashboard + Transaction history view), budgets, goals, report, tax (the Salary page), profile
+- `src/dash.js` Overview cards: spending donut, earnings by source, goals card, insights worked out from the data
+- `src/setup.js` first-run setup (name, currency, starting money), shown while `S.setup` is false
 - `src/demo.js` dev-only sample data
 
 ## Backend (Supabase)
@@ -37,6 +39,7 @@ Project ref `abanaodgwmgrzvdvbpsq`. Table `user_data(user_id, data jsonb, update
 - In fixed and salary modes, income logged as a transaction applies to that month only.
 - The floating + button adds an expense / category / goal depending on the page; quick actions are hidden on phones.
 - Keep motion off for `prefers-reduced-motion`; keep light and dark brand colours identical (lime/mint/pink).
+- Look: green wash behind white cards, lime `--lime` for the one main thing, deep green `--forest` for primary buttons and chart emphasis. Phones get a centred header (profile | title | bell) and a bottom bar with a round lime + in the middle; More holds Goals, Report, Salary.
 - Design rules (direction: calm, exact, a little warm; signature: tally marks, the logo and `tally()` in `ui.js` for counts like bills paid):
   - Type scale is 12 / 14 / 16 / 20 / 28 / 44 px, weights 400 to 600 only. Negative letter spacing only on 28px and up. The phone bottom-bar labels are 11px.
   - Every amount shows its currency's full decimals (`₱8,000.00`) through `peso()` / `money()`; only chart axis labels (`₱10K`) and statutory limits in prose are abbreviated.

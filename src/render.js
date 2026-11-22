@@ -4,6 +4,7 @@ import {needsSetup,showSetup} from './setup.js';
 import {money} from './ui.js';
 import {buildJump} from './jump.js';
 import {home,history} from './views/home.js';
+import {profile} from './views/profile.js';
 import {salary,getStab} from './views/salary.js';
 import {budgets} from './views/budgets.js';
 import {goals} from './views/goals.js';
@@ -14,7 +15,7 @@ import {budgetAlerts} from './alerts.js';
 
 // The floating button always does the most useful add for the page you are on.
 const FAB={bills:['addbill','Add bill'],home:['add','Add expense'],history:['add','Add expense'],report:['add','Add expense'],budgets:['addcat','Add category'],goals:['addgoal','Add goal']};
-const views={home,history,bills,budgets,goals,report:analytics,tax:salary};
+const views={home,history,profile,bills,budgets,goals,report:analytics,tax:salary};
 const still=()=>matchMedia('(prefers-reduced-motion:reduce)').matches;
 let lastView=null,lastMonth=null,raf=0;
 

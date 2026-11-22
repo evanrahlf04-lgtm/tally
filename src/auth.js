@@ -11,18 +11,21 @@ const TITLES={
  setup:['Setup needed','This copy of Tally is not connected to a server yet.']
 };
 
-// Abstract spheres and rings for the welcome screen: drawn as SVG so it stays sharp and tiny.
-const ART=`<svg class="aart" viewBox="0 0 320 240" role="img" aria-label="Spheres and rings"><defs>
-<radialGradient id="g1" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#f1ffc2"/><stop offset=".55" stop-color="#bfe85a"/><stop offset="1" stop-color="#7fae25"/></radialGradient>
-<radialGradient id="g2" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#eceeef"/><stop offset="1" stop-color="#b3b8bf"/></radialGradient>
-<radialGradient id="g3" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#9aa1ab"/><stop offset=".45" stop-color="#3b4047"/><stop offset="1" stop-color="#121417"/></radialGradient>
-<linearGradient id="g4" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#c9ced6" stop-opacity=".3"/></linearGradient></defs>
-<ellipse cx="150" cy="128" rx="118" ry="42" transform="rotate(-24 150 128)" fill="none" stroke="url(#g4)" stroke-width="9" opacity=".75"/>
-<ellipse cx="236" cy="96" rx="42" ry="13" transform="rotate(-18 236 96)" fill="url(#g1)"/>
-<circle cx="150" cy="128" r="50" fill="url(#g1)"/>
-<path d="M44 150c34 32 132 54 214-22" fill="none" stroke="url(#g4)" stroke-width="9" stroke-linecap="round" opacity=".9"/>
-<circle cx="72" cy="62" r="22" fill="url(#g2)"/><circle cx="214" cy="46" r="15" fill="url(#g2)"/><circle cx="262" cy="156" r="13" fill="url(#g2)"/><circle cx="100" cy="196" r="10" fill="url(#g2)"/>
-<circle cx="226" cy="190" r="17" fill="url(#g3)"/><circle cx="40" cy="120" r="9" fill="url(#g3)"/><circle cx="112" cy="26" r="9" fill="url(#g1)"/></svg>`;
+// Welcome illustration: a phone showing a balance and a donut, with currency chips floating round it.
+const ART=`<svg class="aart" viewBox="0 0 320 300" role="img" aria-label="A phone showing a balance and spending chart"><defs>
+<linearGradient id="ph" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#f1f7ec"/></linearGradient>
+<filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#1d4a2e" flood-opacity=".18"/></filter></defs>
+<g transform="rotate(-6 160 150)" filter="url(#sh)"><rect x="92" y="18" width="136" height="268" rx="28" fill="#14211a"/><rect x="99" y="25" width="122" height="254" rx="22" fill="url(#ph)"/>
+<rect x="140" y="32" width="40" height="9" rx="4.5" fill="#14211a"/>
+<text x="112" y="70" font-size="9" fill="#5b6a61" font-family="inherit">Your balance</text><text x="112" y="92" font-size="19" font-weight="600" fill="#14211a" font-family="inherit">₱18,971</text>
+<rect x="112" y="102" width="62" height="16" rx="8" fill="#1d4a2e"/><rect x="178" y="102" width="30" height="16" rx="8" fill="#e2eadc"/>
+<circle cx="160" cy="168" r="30" fill="none" stroke="#e4ece0" stroke-width="10"/><circle cx="160" cy="168" r="30" fill="none" stroke="#8fd14f" stroke-width="10" stroke-dasharray="100 89" stroke-linecap="round" transform="rotate(-90 160 168)"/><circle cx="160" cy="168" r="30" fill="none" stroke="#1d4a2e" stroke-width="10" stroke-dasharray="44 145" stroke-dashoffset="-106" stroke-linecap="round" transform="rotate(-90 160 168)"/>
+<rect x="112" y="214" width="96" height="12" rx="6" fill="#e4ece0"/><rect x="112" y="214" width="62" height="12" rx="6" fill="#c8f07e"/><rect x="112" y="236" width="96" height="12" rx="6" fill="#e4ece0"/><rect x="112" y="236" width="38" height="12" rx="6" fill="#9fb3a5"/></g>
+<g font-family="inherit" font-weight="600" text-anchor="middle" filter="url(#sh)">
+<rect x="22" y="70" width="52" height="52" rx="16" fill="#fff"/><text x="48" y="104" font-size="22" fill="#1d4a2e">₱</text>
+<rect x="248" y="44" width="48" height="48" rx="16" fill="#fff"/><text x="272" y="76" font-size="20" fill="#1d4a2e">$</text>
+<rect x="250" y="190" width="50" height="50" rx="16" fill="#c8f07e"/><text x="275" y="223" font-size="20" fill="#14211a">€</text>
+<rect x="30" y="204" width="44" height="44" rx="14" fill="#fff"/><text x="52" y="233" font-size="18" fill="#1d4a2e">¥</text></g></svg>`;
 
 export function hideAuth(){const a=$('#auth');a.hidden=true;a.innerHTML=''}
 
@@ -30,7 +33,7 @@ export function showAuth(mode,opts={},msg=''){
  const a=$('#auth');a.hidden=false;a.dataset.mode=mode;
  const [h,sub]=TITLES[mode];
  if(mode==='welcome'){
-  a.innerHTML=`<div class="awel"><div class="alogo">${ic('logo','lg').replace('class="i lg"','class="logo"')}<b>tally</b></div>${ART}<h1>${h}</h1><p>${sub}</p><div class="abtns"><button type="button" class="ab1" data-go="signin">Sign in</button><button type="button" class="ab2" data-go="signup">Create an account</button></div><small>Your budget is private to your account.</small></div>`;
+  a.innerHTML=`<div class="awel"><div class="alogo">${ic('logo','lg').replace('class="i lg"','class="logo"')}<b>tally</b></div><h1>Know where <mark>every peso</mark> goes</h1><p>${sub}</p>${ART}<div class="abtns"><button type="button" class="gsb" data-go="signup"><span class="gsk"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 6 6-6 6M13 6l6 6-6 6"/></svg></span><span class="gsl">Get started</span><span class="gsc"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></button><button type="button" class="ab3" data-go="signin">I already have an account</button></div><small>Your budget is private to your account.</small></div>`;
   a.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>showAuth(b.dataset.go));
   return;
  }

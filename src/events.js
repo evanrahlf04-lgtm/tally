@@ -1,4 +1,4 @@
-import {$,peso,ds,HUES,uid,ic,MN,sym,php} from './util.js';
+import {$,esc,peso,ds,HUES,uid,ic,MN,sym,php} from './util.js';
 import {T,cur,tl,S,setCur,setView,setQ,setFt,setFc,setTl,setS,isCur,dim,emptyState,norm,save,mk,cat,calc,PAGE,clean} from './state.js';
 import {signOut} from './session.js';
 import {toggleTheme} from './theme.js';
@@ -117,3 +117,10 @@ document.addEventListener('click',e=>{const k=e.target.closest('[data-kp],[data-
  // A number field drops a trailing point, so the typed text is kept separately until the next digit.
  i.dataset.kv=v;i.value=v.endsWith('.')?v.slice(0,-1):v;i.dispatchEvent(new Event('input',{bubbles:true}))});
 document.addEventListener('input',e=>{if(e.isTrusted&&e.target.matches&&e.target.matches('#sh [name=a]'))delete e.target.dataset.kv});
+
+// Profile page: edit the name, and the budget alerts switch.
+document.addEventListener('click',e=>{
+ if(e.target.closest('[data-act="editname"]'))return modal('Your name',fld('Name','n','text',`maxlength="40" value="${esc(S.name||'')}" autocomplete="given-name"`),f=>{S.name=(f.get('n')||'').trim().slice(0,40);toast('Name saved')});
+ if(e.target.closest('[data-act="theme"]')&&document.querySelector('.pgrid'))setTimeout(render,0);
+ if(e.target.closest('#palerts')){S.alerts.on=!S.alerts.on;save();render();toast(S.alerts.on?'Budget alerts on':'Budget alerts off')}
+});
