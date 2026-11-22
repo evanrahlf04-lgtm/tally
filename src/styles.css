@@ -1139,3 +1139,14 @@ body{background:var(--wash) no-repeat,var(--bg)!important}
 .jump button:hover{background:var(--soft);color:var(--ink)}
 .jump button.on{background:var(--lime);border:0;color:#14211a;font-weight:600}
 .jump{justify-self:start;position:sticky;top:12px;z-index:8;overflow-x:auto}
+/* slide to start */
+.gsb{overflow:hidden;user-select:none;-webkit-user-select:none}
+.gsb::before{content:'';position:absolute;left:8px;top:8px;bottom:8px;width:calc(56px + (100% - 72px) * var(--p,0));border-radius:99px;background:color-mix(in srgb,var(--lime) 45%,transparent);pointer-events:none}
+.gsk{z-index:1;touch-action:none;cursor:grab;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.gsb.drag .gsk{transition:none;cursor:grabbing}
+.gsb.drag::before{transition:none}.gsb::before{transition:width .35s cubic-bezier(.2,.8,.2,1)}
+.gsl{opacity:calc(1 - var(--p,0) * 1.6);transition:opacity .2s}
+.gsc{transition:background .2s,color .2s}
+.gsb.done .gsc{background:var(--forest);color:var(--forest-ink)}
+.gsb:hover .gsk{transform:none}
+@media(prefers-reduced-motion:no-preference){.gsb:not(.drag):not(.done) .gsk{animation:gsn 2.4s cubic-bezier(.2,.8,.2,1) 1.2s 2}@keyframes gsn{0%,60%,100%{translate:0}30%{translate:10px}}}

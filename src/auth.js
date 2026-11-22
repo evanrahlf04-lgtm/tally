@@ -27,6 +27,18 @@ const ART=`<svg class="aart" viewBox="0 0 320 300" role="img" aria-label="A phon
 <rect x="250" y="190" width="50" height="50" rx="16" fill="#c8f07e"/><text x="275" y="223" font-size="20" fill="#14211a">€</text>
 <rect x="30" y="204" width="44" height="44" rx="14" fill="#fff"/><text x="52" y="233" font-size="18" fill="#1d4a2e">¥</text></g></svg>`;
 
+// "Get started" is a slide-to-start bar: drag the lime knob to the end. A tap or Enter still works.
+function slider(bar){
+ if(!bar)return;const k=bar.querySelector('.gsk');let x0=null,dx=0,moved=false;
+ const max=()=>bar.clientWidth-k.offsetWidth-16;
+ const go=()=>{bar.classList.add('done');k.style.transform=`translateX(${max()}px)`;bar.style.setProperty('--p',1);setTimeout(()=>showAuth('signup'),280)};
+ k.addEventListener('pointerdown',e=>{x0=e.clientX;dx=0;moved=false;k.setPointerCapture(e.pointerId);bar.classList.add('drag')});
+ k.addEventListener('pointermove',e=>{if(x0==null)return;dx=Math.max(0,Math.min(max(),e.clientX-x0));if(dx>4)moved=true;k.style.transform=`translateX(${dx}px)`;bar.style.setProperty('--p',(dx/max()).toFixed(3))});
+ const end=()=>{if(x0==null)return;x0=null;bar.classList.remove('drag');if(moved&&dx>=max()*.8)return go();k.style.transform='';bar.style.setProperty('--p',0)};
+ k.addEventListener('pointerup',end);k.addEventListener('pointercancel',end);
+ bar.onclick=e=>{e.preventDefault();if(moved){moved=false;return}go()};
+}
+
 export function hideAuth(){const a=$('#auth');a.hidden=true;a.innerHTML=''}
 
 export function showAuth(mode,opts={},msg=''){
@@ -35,6 +47,7 @@ export function showAuth(mode,opts={},msg=''){
  if(mode==='welcome'){
   a.innerHTML=`<div class="awel"><div class="alogo">${ic('logo','lg').replace('class="i lg"','class="logo"')}<b>tally</b></div><h1>Know where <mark>every peso</mark> goes</h1><p>${sub}</p>${ART}<div class="abtns"><button type="button" class="gsb" data-go="signup"><span class="gsk"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 6 6-6 6M13 6l6 6-6 6"/></svg></span><span class="gsl">Get started</span><span class="gsc"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></button><button type="button" class="ab3" data-go="signin">I already have an account</button></div><small>Your budget is private to your account.</small></div>`;
   a.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>showAuth(b.dataset.go));
+  slider(a.querySelector('.gsb'));
   return;
  }
  const pw=mode==='signin'||mode==='signup'||mode==='recover';

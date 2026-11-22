@@ -1,8 +1,8 @@
 # Tally
 
-The app is called Tally (it was Ipon). Only the visible name changed: the repo, the live URL path (`/ipon/`), the `start-ipon.bat` file name and the internal storage keys (`ipon-v6`, `ipon-theme`, `ipon-side`, `ipon-fx:`) keep the old name on purpose, because renaming the keys would drop users' saved theme and offline copy.
+The app is called Tally (it was Ipon). The repo and live URL were renamed to `tally` on 2026-11-22 (the old `/ipon/` link no longer works). The `start-ipon.bat` file name and the internal storage keys (`ipon-v6`, `ipon-theme`, `ipon-side`, `ipon-fx:`) keep the old name on purpose, because renaming the keys would drop users' saved theme and offline copy.
 
-Personal budgeting web app for the Philippines (budgets, goals, report, salary/tax estimates). Mobile-first, installable PWA. Live: https://evanrahlf04-lgtm.github.io/ipon/ , repo: github.com/evanrahlf04-lgtm/ipon (branch `master`, pushes auto-deploy via GitHub Pages).
+Personal budgeting web app for the Philippines (budgets, goals, report, salary/tax estimates). Mobile-first, installable PWA. Live: https://evanrahlf04-lgtm.github.io/tally/ , repo: github.com/evanrahlf04-lgtm/tally (branch `master`, pushes auto-deploy via GitHub Pages).
 
 ## Commands
 - `npm run dev` : dev server at http://localhost:5173 ; add `?demo` to the URL for sample data and no sign-in (dev only, never in the production build)
