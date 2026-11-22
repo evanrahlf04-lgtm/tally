@@ -2,7 +2,7 @@
 
 The app is called Tally (it was Ipon). The repo and live URL were renamed to `tally` on 2026-11-22 (the old `/ipon/` link no longer works). The `start-ipon.bat` file name and the internal storage keys (`ipon-v6`, `ipon-theme`, `ipon-side`, `ipon-fx:`) keep the old name on purpose, because renaming the keys would drop users' saved theme and offline copy.
 
-Personal budgeting web app for the Philippines (budgets, goals, report, salary/tax estimates). Mobile-first, installable PWA. Live: https://evanrahlf04-lgtm.github.io/tally/ , repo: github.com/evanrahlf04-lgtm/tally (branch `master`, pushes auto-deploy via GitHub Pages).
+Personal budgeting web app for the Philippines (budgets, goals, report, salary/tax estimates). Mobile-first, installable PWA. Live (primary): https://tallyph.vercel.app/ , hosted on Vercel (project `tally` under the `evan-maizie-projects` team), auto-deploys on every push to `master` via its GitHub integration — no separate CI step needed, and `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` are set as Vercel project environment variables (Production + Preview). Repo: github.com/evanrahlf04-lgtm/tally. A second, no-longer-primary copy still auto-deploys to https://evanrahlf04-lgtm.github.io/tally/ via `.github/workflows/deploy.yml` (same pushes to `master`); Supabase's auth Site URL/Redirect URLs now point at the Vercel address, so password-reset and email-confirmation links use tallyph.vercel.app, not the GitHub Pages address.
 
 ## Commands
 - `npm run dev` : dev server at http://localhost:5173 ; add `?demo` to the URL for sample data and no sign-in (dev only, never in the production build)
