@@ -738,7 +738,7 @@ small{font-size:12px}
 .alertbar{box-shadow:none;border:1px solid var(--bad-soft)}
 
 /* transaction rows: room for a full category name */
-.th,.tr{grid-template-columns:48px minmax(0,1.5fr) minmax(140px,1fr) minmax(0,.9fr) 112px 40px}
+@media(min-width:701px){.th,.tr{grid-template-columns:48px minmax(0,1.5fr) minmax(140px,1fr) minmax(0,.9fr) 112px 40px}}
 .tr .cp{max-width:100%}
 
 /* phones: rows and tiles stack so nothing is squeezed */
@@ -785,3 +785,30 @@ small{font-size:12px}
 .bc .h>.bud input{width:120px;height:36px;padding:0 12px;border:0;background:none;color:var(--ink);text-align:right}
 .bc .h>.bud input:focus{outline:none}
 @container (max-width: 340px){.bc .h>.bud{flex:1 1 100%;order:3}}
+
+/* while a field is being typed in on a phone, the keyboard lifts the fixed bars over the field, so hide them */
+@media(max-width:700px){body.typing .side,body.typing .fab{display:none!important}body.typing #main{padding-bottom:24px}}
+
+/* phone: a roomier bottom bar with a clear lime pill on the current page, and transaction rows that read as two lines */
+@media(max-width:700px){
+ .app .side{gap:2px;padding:6px}
+ .app .side .nav{flex:1 1 0;min-width:0;width:auto;height:52px;border-radius:18px;gap:3px}
+ .app .side .nav.on{background:var(--lime);color:#121614;transform:none}
+ .app .side .nav.on .lbl{font-weight:600}
+ .app .side .nav .lbl{font-size:11px}
+ .tr .am small.os{display:none}
+ .tr .m span{color:var(--mute)}
+ .tr{min-height:64px}
+}
+
+/* very narrow phones: tighter bottom bar so every label fits, filters stack */
+@media(max-width:360px){
+ .side{left:8px!important;right:8px!important}
+ .app .side{padding:4px;gap:0}
+ .app .side .nav{border-radius:16px}
+ .app .side .nav .lbl{font-size:10px}
+ .fl{flex-direction:column}.fl .pill.p{flex:1 1 auto;width:100%}
+}
+@media(max-width:360px){.fl>*{flex-shrink:0}.tr .m .oc{display:none}.tr .am small.os{display:block}}
+@media(max-width:700px){.tr .m b{overflow-wrap:break-word}}
+@media(max-width:360px){.tr .am small.os{max-width:84px}}

@@ -96,3 +96,8 @@ document.addEventListener('click',e=>{if(swallow){e.stopPropagation();e.preventD
 let sx=0,sy=0,st=0,skip=true;
 document.addEventListener('touchstart',e=>{const p=e.touches[0];sx=p.clientX;sy=p.clientY;st=Date.now();skip=!!e.target.closest('.tpls,.tplot,input,select,textarea,#modal,#auth,.side')||!document.querySelector('.mon')},{passive:true});
 document.addEventListener('touchend',e=>{if(skip)return;const p=e.changedTouches[0],dx=p.clientX-sx,dy=p.clientY-sy;if(Math.abs(dx)<80||Math.abs(dy)>50||Date.now()-st>600)return;const d=new Date(cur.y,cur.m+(dx<0?1:-1),1);setCur({y:d.getFullYear(),m:d.getMonth()});render()},{passive:true});
+
+// Phones: hide the fixed bottom bar and + button while a field is focused so the keyboard cannot lift them over it.
+const typingEl=e=>e.target&&e.target.matches&&e.target.matches('#main input:not([type=checkbox]):not([type=radio]),#main textarea');
+document.addEventListener('focusin',e=>{if(typingEl(e))document.body.classList.add('typing')});
+document.addEventListener('focusout',e=>{if(typingEl(e))setTimeout(()=>{if(!typingEl({target:document.activeElement}))document.body.classList.remove('typing')},50)});
