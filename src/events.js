@@ -1,8 +1,8 @@
 import {$,esc,peso,ds,HUES,uid,ic,MN,sym,php} from './util.js';
-import {T,cur,tl,S,setCur,setView,setQ,setFt,setFc,setTl,setS,isCur,dim,emptyState,norm,save,mk,cat,calc,PAGE,clean,setRange} from './state.js';
+import {T,cur,tl,S,setCur,setView,setQ,setFt,setFc,setTl,setS,isCur,dim,emptyState,norm,save,mk,cat,calc,PAGE,clean,setRange,range} from './state.js';
 import {signOut} from './session.js';
 import {toggleTheme} from './theme.js';
-import {toast} from './ui.js';
+import {toast,monHtml} from './ui.js';
 import {modal,fld,amt,openTx,catModal,goalModal,accountSheet,billModal,payModal,debtModal,debtPayModal,payEntryModal,recvModal,taxPayModal,fundModal,currencyModal,baseModal} from './modals.js';
 import {settleGoal} from './goals.js';
 import {refreshLive} from './fx.js';
@@ -19,7 +19,7 @@ function lastPay(o){const b=o.b,l=S.tx.filter(t=>t.type==='expense'&&(t.billId?t
 import {saveFile,csv} from './files.js';
 import {render} from './render.js';
 import {taxRes,empCalc,syncIncome} from './views/tax.js';
-import {txPart} from './views/home.js';
+import {txPart,rangeSub} from './views/home.js';
 // Re-draws only the transaction list so typing in search never rebuilds the whole page.
 // Keeps the "use my take-home" label showing the current income while typing.
 function linkLabel(){const c=$('#tlink');if(c&&c.nextSibling)c.nextSibling.textContent='Use my take-home pay as my monthly income ('+peso(S.income)+')'}
@@ -101,7 +101,18 @@ document.addEventListener('focusout',e=>{if(typingEl(e))setTimeout(()=>{if(!typi
 // Type chips above the transaction list (All, Expenses, Income).
 document.addEventListener('click',e=>{const b=e.target.closest('[data-ftc]');if(b){const v=b.dataset.ftc;if(v.startsWith('c:')){setFt('all');setFc(v.slice(2))}else{setFt(v);setFc('all')}setTl(PAGE());document.querySelectorAll('#ftc button').forEach(x=>x.classList.toggle('on',x===b));return refreshList()}
  if(e.target.closest('#hsearch')){const s=document.querySelector('.hsrch');if(s){s.hidden=!s.hidden;if(!s.hidden)s.querySelector('input').focus()}}
- const rb=e.target.closest('[data-rng]');if(rb){setRange(rb.dataset.rng);setTl(PAGE());return render()}});
+ // Switch the history period in place, so the list scrolls where it is instead of jumping back to the top.
+ const rb=e.target.closest('[data-rng]');if(rb){
+  setRange(rb.dataset.rng);setTl(PAGE());
+  document.querySelectorAll('#rngc button').forEach(x=>x.classList.toggle('on',x===rb));
+  const top=document.querySelector('.top.hist'),mon=top&&top.querySelector('.mon');
+  if(range==='month'&&!mon&&top)top.insertAdjacentHTML('beforeend',monHtml());
+  else if(range!=='month'&&mon)mon.remove();
+  const small=top&&top.querySelector('.tt small'),p=txPart();
+  if(small)small.innerHTML=rangeSub()+' · <span id="tcount">'+p.count+' total</span>';
+  const l=$('#txlist');if(l)l.innerHTML=p.html;
+  return;
+ }});
 
 // Number pad in the add-transaction sheet.
 document.addEventListener('click',e=>{const k=e.target.closest('[data-kp],[data-kq]');if(!k)return;const i=document.querySelector('#sh [name=a]');if(!i)return;

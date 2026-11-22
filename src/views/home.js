@@ -17,9 +17,11 @@ function txPart(){const[from,to]=rangeBounds(),src=range==='month'?calc().tx:S.t
  const empty=range==='month'?'No transactions in '+MF[cur.m]+' yet.':'No transactions in this period.';
  return{count:list.length,html:(rows||`<div class="empty">${ic('wallet','lg')}${S.tx.length?'No matches.':empty}</div>`)+(list.length>tl?`<button class="btn g more" data-act="more">Show ${Math.min(PAGE(),list.length-tl)} more</button>`:'')}}
 // The full list with search and filter chips, opened from "View all" on Overview.
+// The subtitle text for whichever period is picked ("November 2026", "This year", ...).
+const rangeSub=()=>range==='month'?`${MF[cur.m]} ${cur.y}`:RANGES.find(r=>r[0]===range)[1];
 function history(){const tp=txPart(),key=fc!=='all'?'c:'+fc:ft;
  const chips=[['all','All'],['expense','Expenses'],['income','Income'],...S.cats.map(c=>['c:'+c.id,c.name])];
- const sub=range==='month'?`${MF[cur.m]} ${cur.y}`:RANGES.find(r=>r[0]===range)[1];
+ const sub=rangeSub();
  return `<div class="top hist"><button class="hb" data-v2="home" aria-label="Back to Overview">${ic('l')}</button><div class="tt"><h1 class="serif">Transaction history</h1><small>${sub} · <span id="tcount">${tp.count} total</span></small></div><button class="hb" id="hsearch" aria-label="Search">${ic('search')}</button>${range==='month'?monHtml():''}</div>
  <div class="hsrch" ${q?'':'hidden'}><label class="pill s">${ic('search','sm')}<input id="q" placeholder="Search notes or categories" value="${esc(q)}"></label></div>
  <div class="chips" id="rngc">${RANGES.map(r=>`<button type="button" data-rng="${r[0]}" class="${range===r[0]?'on':''}">${r[1]}</button>`).join('')}</div>
@@ -47,5 +49,5 @@ function home(){const s=calc(),bs=balSwitch(s.left);
  <section class="panel dcard dtx fade" data-sec="Transactions"><div class="dh2"><span class="dic">${ic('in')}</span><h2>Transactions</h2><button class="va" data-v2="history">View all${ic('r','sm')}</button></div><div id="htx">${rowsHtml(s.tx.slice().sort(byDate).slice(0,5))||`<div class="empty">${ic('wallet','lg')}No transactions in ${MF[cur.m]} yet.</div>`}</div></section>
  <section class="panel dcard dbills" data-sec="Bills"><div class="dh2"><span class="dic">${ic('cal')}</span><h2>Bills this month</h2><div class="scs">${tally(paidN,bills.length,paidN+' of '+bills.length+' bills paid')}<button class="scb" data-sc="-1" aria-label="Scroll bills left">${ic('l','sm')}</button><button class="scb" data-sc="1" aria-label="Scroll bills right">${ic('r','sm')}</button></div></div><div class="tpls">${bills.map(o=>{const c=cat(o.b.catId),late=o.st==='late';return `<button class="tpl ${o.st==='paid'?'done':''}" style="--h:${c.hue}" data-pay="${o.b.id}|${o.key}"><div class="t">${tone(c.hue,c.icon)}<div style="min-width:0"><b>${esc(o.b.name)}</b><span class="st ${late?'late':''}">${ic(o.st==='paid'?'check':late?'alert':'cal','sm')}${label(o)}</span></div></div><div class="f"><span>${dateTxt(o.date)}</span><b>${peso(o.rem>0?o.rem:o.amt)}</b></div></button>`}).join('')}<button class="tpl tnew" data-act="addbill">${ic('plus','lg')}<span>New bill</span></button></div></section>
  </div>`}
-export {home,txPart,history};
+export {home,txPart,history,rangeSub};
 
