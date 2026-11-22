@@ -1,5 +1,5 @@
 import {$,esc,peso,ds,HUES,uid,ic,MN,sym,php} from './util.js';
-import {T,cur,tl,S,setCur,setView,setQ,setFt,setFc,setTl,setS,isCur,dim,emptyState,norm,save,mk,cat,calc,PAGE,clean} from './state.js';
+import {T,cur,tl,S,setCur,setView,setQ,setFt,setFc,setTl,setS,isCur,dim,emptyState,norm,save,mk,cat,calc,PAGE,clean,setRange} from './state.js';
 import {signOut} from './session.js';
 import {toggleTheme} from './theme.js';
 import {toast} from './ui.js';
@@ -92,10 +92,6 @@ document.addEventListener('pointerdown',e=>{const el=e.target.closest('.tpls');i
 document.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x;if(Math.abs(dx)>5){drag.m=true;drag.el.classList.add('drag')}if(drag.m)drag.el.scrollLeft=drag.l-dx});
 document.addEventListener('pointerup',()=>{if(!drag)return;if(drag.m)swallow=true;drag.el.classList.remove('drag');drag=null;setTimeout(()=>{swallow=false},0)});
 document.addEventListener('click',e=>{if(swallow){e.stopPropagation();e.preventDefault()}},true);
-// Swipe left/right on a page with a month picker to change month.
-let sx=0,sy=0,st=0,skip=true;
-document.addEventListener('touchstart',e=>{const p=e.touches[0];sx=p.clientX;sy=p.clientY;st=Date.now();skip=!!e.target.closest('.tpls,.tplot,input,select,textarea,#modal,#auth,.side')||!document.querySelector('.mon')},{passive:true});
-document.addEventListener('touchend',e=>{if(skip)return;const p=e.changedTouches[0],dx=p.clientX-sx,dy=p.clientY-sy;if(Math.abs(dx)<80||Math.abs(dy)>50||Date.now()-st>600)return;const d=new Date(cur.y,cur.m+(dx<0?1:-1),1);setCur({y:d.getFullYear(),m:d.getMonth()});render()},{passive:true});
 
 // Phones: hide the fixed bottom bar and + button while a field is focused so the keyboard cannot lift them over it.
 const typingEl=e=>e.target&&e.target.matches&&e.target.matches('#main input:not([type=checkbox]):not([type=radio]),#main textarea');
@@ -104,7 +100,8 @@ document.addEventListener('focusout',e=>{if(typingEl(e))setTimeout(()=>{if(!typi
 
 // Type chips above the transaction list (All, Expenses, Income).
 document.addEventListener('click',e=>{const b=e.target.closest('[data-ftc]');if(b){const v=b.dataset.ftc;if(v.startsWith('c:')){setFt('all');setFc(v.slice(2))}else{setFt(v);setFc('all')}setTl(PAGE());document.querySelectorAll('#ftc button').forEach(x=>x.classList.toggle('on',x===b));return refreshList()}
- if(e.target.closest('#hsearch')){const s=document.querySelector('.hsrch');if(s){s.hidden=!s.hidden;if(!s.hidden)s.querySelector('input').focus()}}});
+ if(e.target.closest('#hsearch')){const s=document.querySelector('.hsrch');if(s){s.hidden=!s.hidden;if(!s.hidden)s.querySelector('input').focus()}}
+ const rb=e.target.closest('[data-rng]');if(rb){setRange(rb.dataset.rng);setTl(PAGE());return render()}});
 
 // Number pad in the add-transaction sheet.
 document.addEventListener('click',e=>{const k=e.target.closest('[data-kp],[data-kq]');if(!k)return;const i=document.querySelector('#sh [name=a]');if(!i)return;

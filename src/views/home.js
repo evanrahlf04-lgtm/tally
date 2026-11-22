@@ -1,5 +1,5 @@
 import {$,esc,peso,MN,MF,ic} from '../util.js';
-import {now,cur,q,ft,fc,tl,S,isCur,isPast,cat,calc,budgetOf,PAGE,isBalance,incWord} from '../state.js';
+import {now,cur,q,ft,fc,tl,S,isCur,isPast,cat,calc,budgetOf,PAGE,isBalance,incWord,range,setRange,rangeBounds} from '../state.js';
 import {tone,money,topbar,tally,monHtml} from '../ui.js';
 import {monthOcc,overdue,upcoming,label,dateTxt,mkey} from '../bills.js';
 import {budgetAlerts} from '../alerts.js';
@@ -9,14 +9,20 @@ const dayLbl=d=>{const t0=new Date(),y0=new Date(t0.getFullYear(),t0.getMonth(),
 function rowsHtml(list){let last='';return list.map(t=>{const c=cat(t.catId),inc=t.type==='income',d=new Date(t.date+'T00:00'),k=d.toDateString(),dl=k!==last?(last=k,'<div class="dh"><span>'+dayLbl(d)+'</span></div>'):'';
  return dl+`<button class="tr" data-edit="${t.id}">${inc?tone(68,'in'):tone(c.hue,c.icon)}<div class="m"><b>${esc(t.note||c.name)}</b><span><i class="ns">${inc?'Income':'Expense'}</i><i class="os">${inc?'Income':esc(c.name)}</i></span></div>${inc?'<span class="badge" style="justify-self:start">Income</span>':`<span class="cp tone" style="--h:${c.hue}">${esc(c.name)}</span>`}<div class="dt">${d.getDate()} ${MN[d.getMonth()]} ${d.getFullYear()}</div><div class="am ${inc?'in':''}">${inc?'+':'−'}${peso(t.amount)}<small class="os">${inc?'Income':'Expense'}</small></div><span class="go">${ic('edit','sm')}</span></button>`}).join('')}
 const byDate=(a,b)=>b.date.localeCompare(a.date);
-function txPart(){const s=calc(),list=s.tx.filter(t=>(ft==='all'||t.type===ft)&&(fc==='all'||t.catId===fc)&&(!q||(t.note+' '+cat(t.catId).name).toLowerCase().includes(q.toLowerCase()))).sort(byDate);
+// Preset windows for the history screen. 'month' tracks the month picker; the rest are fixed, relative to today.
+const RANGES=[['month','This month'],['today','Today'],['yesterday','Yesterday'],['week','Last 7 days'],['3m','Last 3 months'],['year','This year'],['all','All time']];
+function txPart(){const[from,to]=rangeBounds(),src=range==='month'?calc().tx:S.tx.filter(t=>t.date>=from&&t.date<=to);
+ const list=src.filter(t=>(ft==='all'||t.type===ft)&&(fc==='all'||t.catId===fc)&&(!q||(t.note+' '+cat(t.catId).name).toLowerCase().includes(q.toLowerCase()))).sort(byDate);
  const rows=rowsHtml(list.slice(0,tl));
- return{count:list.length,html:(rows||`<div class="empty">${ic('wallet','lg')}${S.tx.length?'No matches.':'No transactions in '+MF[cur.m]+' yet.'}</div>`)+(list.length>tl?`<button class="btn g more" data-act="more">Show ${Math.min(PAGE(),list.length-tl)} more</button>`:'')}}
+ const empty=range==='month'?'No transactions in '+MF[cur.m]+' yet.':'No transactions in this period.';
+ return{count:list.length,html:(rows||`<div class="empty">${ic('wallet','lg')}${S.tx.length?'No matches.':empty}</div>`)+(list.length>tl?`<button class="btn g more" data-act="more">Show ${Math.min(PAGE(),list.length-tl)} more</button>`:'')}}
 // The full list with search and filter chips, opened from "View all" on Overview.
 function history(){const tp=txPart(),key=fc!=='all'?'c:'+fc:ft;
  const chips=[['all','All'],['expense','Expenses'],['income','Income'],...S.cats.map(c=>['c:'+c.id,c.name])];
- return `<div class="top hist"><button class="hb" data-v2="home" aria-label="Back to Overview">${ic('l')}</button><div class="tt"><h1 class="serif">Transaction history</h1><small>${MF[cur.m]} ${cur.y} · <span id="tcount">${tp.count} total</span></small></div><button class="hb" id="hsearch" aria-label="Search">${ic('search')}</button>${monHtml()}</div>
+ const sub=range==='month'?`${MF[cur.m]} ${cur.y}`:RANGES.find(r=>r[0]===range)[1];
+ return `<div class="top hist"><button class="hb" data-v2="home" aria-label="Back to Overview">${ic('l')}</button><div class="tt"><h1 class="serif">Transaction history</h1><small>${sub} · <span id="tcount">${tp.count} total</span></small></div><button class="hb" id="hsearch" aria-label="Search">${ic('search')}</button>${range==='month'?monHtml():''}</div>
  <div class="hsrch" ${q?'':'hidden'}><label class="pill s">${ic('search','sm')}<input id="q" placeholder="Search notes or categories" value="${esc(q)}"></label></div>
+ <div class="chips" id="rngc">${RANGES.map(r=>`<button type="button" data-rng="${r[0]}" class="${range===r[0]?'on':''}">${r[1]}</button>`).join('')}</div>
  <div class="chips" id="ftc">${chips.map(o=>`<button type="button" data-ftc="${o[0]}" class="${key===o[0]?'on':''}">${esc(o[1])}</button>`).join('')}</div>
  <section class="panel fade" data-nojump><div class="th"><span></span><span>Transaction</span><span>Category</span><span>Date</span><span>Amount</span><span></span></div><div id="txlist">${tp.html}</div></section>`}
 // Shows the top budget alerts for this month on Overview.

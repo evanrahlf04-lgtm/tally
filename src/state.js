@@ -4,7 +4,20 @@ import {clean} from './sanitize.js';
 const KEY='ipon-v6',TK='ipon-theme';
 const now=new Date(),T=ds(now.getFullYear(),now.getMonth(),now.getDate());
 let cur={y:now.getFullYear(),m:now.getMonth()},view='home',q='',ft='all',fc='all',tl=innerWidth<861?12:30,user=null,savedAt=0,saveHook=null;
-const setCur=v=>{cur=v},setView=v=>{view=v},setQ=v=>{q=v},setFt=v=>{ft=v},setFc=v=>{fc=v},setTl=v=>{tl=v},setS=v=>{S=v},setUser=v=>{user=v},setSaveHook=v=>{saveHook=v};
+// Which period the Transaction history screen shows: 'month' follows the month picker (cur.y/cur.m) as before;
+// the others ('today','yesterday','week','3m','year','all') ignore cur and look at a fixed window from today.
+let range='month';
+const setCur=v=>{cur=v},setView=v=>{view=v},setQ=v=>{q=v},setFt=v=>{ft=v},setFc=v=>{fc=v},setTl=v=>{tl=v},setS=v=>{S=v},setUser=v=>{user=v},setSaveHook=v=>{saveHook=v},setRange=v=>{range=v};
+// The [from,to] date-string bounds (inclusive) for the chosen history range.
+function rangeBounds(){
+ if(range==='month')return[ds(cur.y,cur.m,1),ds(cur.y,cur.m+1,0)];
+ const d=n=>{const x=new Date(now);x.setDate(x.getDate()-n);return ds(x.getFullYear(),x.getMonth(),x.getDate())};
+ if(range==='today')return[T,T];
+ if(range==='yesterday'){const y=d(1);return[y,y]}
+ if(range==='week')return[d(6),T];
+ if(range==='3m'){const x=new Date(now.getFullYear(),now.getMonth()-2,1);return[ds(x.getFullYear(),x.getMonth(),1),T]}
+ if(range==='year')return[ds(now.getFullYear(),0,1),ds(now.getFullYear(),11,31)];
+ return['0000-01-01','9999-12-31']}
 const isCur=()=>cur.y===now.getFullYear()&&cur.m===now.getMonth();
 const isPast=()=>cur.y<now.getFullYear()||(cur.y===now.getFullYear()&&cur.m<now.getMonth());
 const dim=()=>new Date(cur.y,cur.m+1,0).getDate();
@@ -78,4 +91,4 @@ function calc(){const k=mk(),tx=S.tx.filter(t=>t.date.startsWith(k)),by={};let e
  return{tx,by,spent,saved,income,left,open,inflow:inflowM,unpaid,proj,free,budget:S.cats.reduce((a,c)=>a+budgetOf(c),0),day,dm}}
 // Rows shown in the transaction list at a time: fewer on phones.
 const PAGE=()=>innerWidth<861?12:30;
-export {clean,PAGE,KEY,TK,now,T,cur,view,q,ft,fc,tl,S,user,setTl,setCur,setView,setQ,setFt,setFc,setS,setUser,setSaveHook,isCur,isPast,dim,emptyState,norm,loadLocal,clearLocal,adopt,getSavedAt,save,mk,cat,monthSum,calc,paySum,baseIncome,incomeRef,isBalance,opening,inflow,incWord,GROUPS,grpOf,budgetOf};
+export {clean,PAGE,KEY,TK,now,T,cur,view,q,ft,fc,tl,range,S,user,setTl,setCur,setView,setQ,setFt,setFc,setS,setUser,setSaveHook,setRange,rangeBounds,isCur,isPast,dim,emptyState,norm,loadLocal,clearLocal,adopt,getSavedAt,save,mk,cat,monthSum,calc,paySum,baseIncome,incomeRef,isBalance,opening,inflow,incWord,GROUPS,grpOf,budgetOf};

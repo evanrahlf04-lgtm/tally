@@ -1105,7 +1105,7 @@ body{background:var(--wash) no-repeat,var(--bg)!important}
 /* ---- Welcome: green wash, highlighted headline, Get started bar ---- */
 #auth:not([hidden]){background:radial-gradient(circle,rgba(29,74,46,.10) 1.2px,transparent 1.6px) 0 0/14px 14px,linear-gradient(180deg,#dcefcd 0%,#eef6e8 55%,#f6f9f3 100%);color:#14211a}
 .alogo,.alogo .logo{color:#14211a}
-.awel{justify-content:flex-start;gap:0}
+.awel{justify-content:center;gap:0}
 .awel h1{color:#14211a;font-size:44px;line-height:1.1;letter-spacing:-.02em;max-width:9.5em;margin-top:28px}
 .awel h1 mark{background:var(--lime);color:#14211a;padding:0 10px;border-radius:10px;box-decoration-break:clone;-webkit-box-decoration-break:clone;display:inline-block;transform:rotate(-2deg);margin:4px 0}
 .awel p{color:#4d5d53}
@@ -1150,3 +1150,11 @@ body{background:var(--wash) no-repeat,var(--bg)!important}
 .gsb.done .gsc{background:var(--forest);color:var(--forest-ink)}
 .gsb:hover .gsk{transform:none}
 @media(prefers-reduced-motion:no-preference){.gsb:not(.drag):not(.done) .gsk{animation:gsn 2.4s cubic-bezier(.2,.8,.2,1) 1.2s 2}@keyframes gsn{0%,60%,100%{translate:0}30%{translate:10px}}}
+
+/* Welcome screen: shrink to fit short viewports instead of scrolling (mobile browser chrome, small phones) */
+.awel{padding-top:max(env(safe-area-inset-top),clamp(10px,3dvh,28px));padding-bottom:max(env(safe-area-inset-bottom),clamp(10px,3dvh,24px))}
+.awel .aart{width:min(100%,340px);max-height:30dvh;aspect-ratio:320/300;height:auto;margin:clamp(2px,1.5dvh,8px) auto clamp(4px,2dvh,8px)}
+.awel h1{margin-top:clamp(6px,1.5dvh,12px)}
+.awel p{margin:clamp(4px,1dvh,10px) 0 clamp(10px,2.5dvh,24px)}
+.abtns{gap:clamp(8px,1.5dvh,12px)}
+.awel small{margin-top:clamp(6px,1.5dvh,18px)}
