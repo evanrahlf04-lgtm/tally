@@ -69,3 +69,24 @@ function insights(){
  return `<section class="panel dins" data-sec="Insights"><div class="sec"><h2>Insights</h2><span class="mute">${out.length} for ${MN[cur.m]}</span></div><div class="insr">${out.slice(0,6).map(x=>`<button class="ins" data-v2="${x.go}"><div class="ih"><span class="dic">${ic(x.i)}</span>${tag(x.k)}</div><b>${x.t}</b><p>${x.d}</p></button>`).join('')}</div></section>`}
 
 export {spendCard,earnCard,goalCard,insights};
+
+// Balance currency switch: the budget currency plus two others, shown at today's live rate (display only).
+import {liveRate,liveInfo,liveStale,refreshLive,when} from './fx.js';
+let balCur=null,tried=0;try{balCur=localStorage.getItem('ipon-balcur')}catch(e){}
+const setBalCur=c=>{balCur=c;try{localStorage.setItem('ipon-balcur',c)}catch(e){}};
+const symOf=c=>{try{return new Intl.NumberFormat('en',{style:'currency',currency:c,currencyDisplay:'narrowSymbol'}).formatToParts(0).find(p=>p.type==='currency').value}catch(e){return c}};
+const fmtIn=(c,v)=>{try{return new Intl.NumberFormat('en-US',{style:'currency',currency:c,currencyDisplay:'narrowSymbol',minimumFractionDigits:2,maximumFractionDigits:2}).format(v)}catch(e){return c+' '+v.toFixed(2)}};
+function balChoices(){const main=S.currency||'PHP',seen=[];
+ [...S.pay,...S.tx].forEach(x=>{const c=x.fx&&x.fx.c;if(c&&c!==main&&!seen.includes(c))seen.push(c)});
+ ['USD','EUR','SGD','JPY'].forEach(c=>{if(c!==main&&!seen.includes(c))seen.push(c)});
+ return [main,...seen.slice(0,2)]}
+function balSwitch(left){
+ const list=balChoices(),main=list[0],c=list.includes(balCur)?balCur:main,r=c===main?1:liveRate(c);
+ // Fetch once a minute at most, so being offline cannot loop.
+ if(c!==main&&!r&&Date.now()-tried>6e4){tried=Date.now();refreshLive().then(()=>import('./render.js').then(m=>m.render())).catch(()=>{})}
+ const chips=`<div class="dcs" role="group" aria-label="Show balance in">${list.map(x=>`<button type="button" data-bcur="${x}" class="${x===c?'on':''}" aria-pressed="${x===c}">${x===c?`<span class="dsy">${esc(symOf(x))}</span>`:''}${x}</button>`).join('')}</div>`;
+ if(c===main)return{chips,conv:null};
+ const info=liveInfo();
+ return{chips,conv:r?{val:fmtIn(c,left/r),note:`1 ${c} = ${peso(r)}`,at:info?'Rate from '+when(info.updated):''}:{val:'…',note:'Getting today’s rate'}};
+}
+export {balSwitch,setBalCur};

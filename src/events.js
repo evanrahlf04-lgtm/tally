@@ -124,3 +124,6 @@ document.addEventListener('click',e=>{
  if(e.target.closest('[data-act="theme"]')&&document.querySelector('.pgrid'))setTimeout(render,0);
  if(e.target.closest('#palerts')){S.alerts.on=!S.alerts.on;save();render();toast(S.alerts.on?'Budget alerts on':'Budget alerts off')}
 });
+
+// Balance currency switch on Overview.
+document.addEventListener('click',e=>{const b=e.target.closest('[data-bcur]');if(!b)return;import('./dash.js').then(m=>{m.setBalCur(b.dataset.bcur);render()})});
