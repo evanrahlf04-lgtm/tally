@@ -19,7 +19,31 @@ function hist(g){const h=contribs(g);if(!h.length)return '';const d=t=>{const x=
 function summary(){if(!S.goals.length)return '';const saved=S.goals.reduce((a,g)=>a+g.saved,0),target=S.goals.reduce((a,g)=>a+g.target,0),p=target?Math.min(100,saved/target*100):0,auto=S.goals.reduce((a,g)=>a+(g.auto||0),0),next=S.goals.filter(g=>g.date&&g.saved<g.target).sort((a,b)=>a.date.localeCompare(b.date))[0];
  const nx=next?new Date(next.date+'T00:00'):null;
  return `<section class="panel fade dsk" data-nojump><div class="hrow" style="align-items:flex-end"><div><div class="lab">Saved so far</div><div class="serif" style="font-size:28px;font-weight:600">${peso(saved)} <span class="mute" style="font-size:16px;font-weight:500">of ${peso(target)}</span></div></div><div class="sub" style="text-align:right">${auto?`Saving ${peso(auto)} a month automatically<br>`:''}${next?`Next target: <b>${esc(next.name)}</b> by ${nx.getDate()} ${MN[nx.getMonth()]} ${nx.getFullYear()}`:'No target dates set yet'}</div></div><div class="meter"><i style="width:${p}%"></i></div></section>`}
+
+// The one goal in front and centre: whichever is still in progress and closest to done, or the first if all are reached.
+function featuredCard(g){
+ const p=Math.min(100,g.saved/g.target*100),done=g.saved>=g.target,pc=pace(g);
+ return `<section class="panel dcard ghero" data-sec="Featured"><div class="ghh"><span class="gbadge ${done?'ok':''}">${ic(done?'check':'target','sm')}${done?'Goal reached':'In progress'}</span><button class="hb" data-editgoal="${g.id}" aria-label="Edit ${esc(g.name)}">${ic('edit','sm')}</button></div>
+ <b class="gname">${esc(g.name)}</b>
+ <div class="gamt">${peso(g.saved)}<span> of ${peso(g.target)}</span></div>
+ <div class="bar"><i style="width:${p}%;background:var(--forest)"></i></div>
+ <div class="gfoot"><span class="gpc">${Math.round(p)}%</span>${pc?`<span>${pc.t}</span>`:''}</div>
+ <button class="btn" data-fund="${g.id}" style="margin-top:16px;width:100%">${ic('plus','sm')}Add money</button>
+ ${g.auto>0?`<div class="pace" style="margin-top:10px">${ic('cal','sm')}Saving ${peso(g.auto)} on the ${ord(g.autoDay)} each month. See Payables.</div>`:''}
+ ${hist(g)}</section>`}
+
+// Every other goal, as a compact row: icon, name, fraction, percent, with the pace note and history tucked underneath.
+function otherRow(g){
+ const p=Math.min(100,g.saved/g.target*100),done=g.saved>=g.target,pc=pace(g);
+ return `<div class="orow"><div class="oh">${tone(68,'target')}<button class="on" data-editgoal="${g.id}"><b>${esc(g.name)}</b><small>${peso(g.saved)} of ${peso(g.target)}</small></button><span class="opc ${done?'ok':''}">${Math.round(p)}%</span><button class="btn sm g" data-fund="${g.id}" aria-label="Add to ${esc(g.name)}">${ic('plus','sm')}</button></div>${pc?`<div class="pace ${pc.cls}">${ic(pc.cls==='late'?'alert':pc.cls==='ok'?'check':'cal','sm')}${pc.t}</div>`:''}${g.auto>0?`<div class="pace">${ic('cal','sm')}Saving ${peso(g.auto)} on the ${ord(g.autoDay)} each month. See Payables.</div>`:''}${hist(g)}</div>`}
+
 function goals(){
  const saved=S.goals.reduce((a,g)=>a+g.saved,0),target=S.goals.reduce((a,g)=>a+g.target,0);
- return topbar('Goals',S.goals.length?`${peso(saved)} saved of ${peso(target)}`:'Money set aside for later',true)+summary()+`<section class="full fade"><div class="sec"><h2>${S.goals.length} goal${S.goals.length===1?'':'s'}</h2><button class="btn sm" data-act="addgoal">${ic('plus','sm')}Goal</button></div><div class="grid2 goalg">${S.goals.length?S.goals.map(g=>{const p=Math.min(100,g.saved/g.target*100),pc=pace(g);return `<div class="bc"><div class="h">${tone(68,'target')}<button class="n" data-editgoal="${g.id}"><b>${esc(g.name)}</b><span class="s">${g.target-g.saved>0?peso(g.target-g.saved)+' to go':'Reached'}</span></button><button class="btn sm g" data-fund="${g.id}">${ic('plus','sm')}Add</button></div><div class="bar"><i style="width:${p}%;background:var(--accent)"></i></div><div class="f"><span>${peso(g.saved)} of ${peso(g.target)}</span><span>${Math.round(p)}%</span></div>${pc?`<div class="pace ${pc.cls}">${ic(pc.cls==='late'?'alert':pc.cls==='ok'?'check':'cal','sm')}${pc.t}</div>`:''}${g.auto>0?`<div class="pace">${ic('cal','sm')}Saving ${peso(g.auto)} on the ${ord(g.autoDay)} each month. See Payables.</div>`:''}${hist(g)}</div>`}).join(''):`<div class="empty full">${ic('target','lg')}No goals yet. Add one to start saving toward something.<button class="btn sm" data-act="addgoal">${ic('plus','sm')}New goal</button></div>`}</div></section>`}
+ if(!S.goals.length)return topbar('Goals','Money set aside for later',true)+`<section class="panel fade" data-nojump><div class="empty">${ic('target','lg')}No goals yet. Add one to start saving toward something.<button class="btn" data-act="addgoal">${ic('plus','sm')}New goal</button></div></section>`;
+ const sorted=S.goals.slice().sort((a,b)=>(a.saved>=a.target?1:0)-(b.saved>=b.target?1:0)||(a.date||'9999').localeCompare(b.date||'9999'));
+ const featured=sorted[0],rest=sorted.slice(1);
+ return topbar('Goals',`${peso(saved)} saved of ${peso(target)}`,true)+summary()
+ +featuredCard(featured)
+ +(rest.length?`<section class="full fade"><div class="sec"><h2>Other goals</h2><button class="btn sm" data-act="addgoal">${ic('plus','sm')}Goal</button></div><div class="orows">${rest.map(otherRow).join('')}</div></section>`
+ :`<section class="full fade" data-nojump><button class="btn g" data-act="addgoal" style="width:100%">${ic('plus','sm')}Add another goal</button></section>`)}
 export {goals};

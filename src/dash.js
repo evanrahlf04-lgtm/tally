@@ -90,3 +90,11 @@ function balSwitch(left){
  return{chips,conv:r?{val:fmtIn(c,left/r),note:`1 ${c} = ${peso(r)}`,at:info?'Rate from '+when(info.updated):''}:{val:'…',note:'Getting today’s rate'}};
 }
 export {balSwitch,setBalCur};
+
+// Masking the big balance figure, remembered on this device (does not hide anything else).
+let balHidden=false;try{balHidden=localStorage.getItem('ipon-balhide')==='1'}catch(e){}
+const toggleBalHidden=()=>{balHidden=!balHidden;try{localStorage.setItem('ipon-balhide',balHidden?'1':'0')}catch(e){}};
+const isBalHidden=()=>balHidden;
+// How much a running balance moved this month, as a %. Only meaningful when there was an opening balance to grow from.
+const balTrend=(open,left)=>open>0?Math.round((left-open)/open*1000)/10:null;
+export {toggleBalHidden,isBalHidden,balTrend};

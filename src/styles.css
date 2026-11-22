@@ -893,12 +893,12 @@ small{font-size:12px}
 @media(max-width:860px){
  .fab{display:none!important}
  .app .side{background:var(--surface);border:1px solid var(--border);box-shadow:0 12px 32px rgba(18,22,20,.10);border-radius:28px;padding:8px 12px;gap:4px;align-items:center;justify-content:space-between}
- .app .side .nav[data-v=goals],.app .side .nav[data-v=report],.app .side .nav[data-v=tax]{display:none}
+ .app .side .nav[data-v=goals],.app .side .nav[data-v=report],.app .side .nav[data-v=budgets]{display:none}
  .app .side .nav{flex:1 1 0;height:56px;background:transparent;color:var(--mute);opacity:1;border-radius:16px;gap:4px}
  .app .side .nav.on{background:transparent;color:var(--ink)}
  .app .side .nav.on .lbl{font-weight:600}
  .app .side .nav .lbl{font-size:12px}
- .app .side .nav[data-v=home]{order:1}.app .side .nav[data-v=bills]{order:2}.app .side #ctr{order:3}.app .side .nav[data-v=budgets]{order:4}.app .side #navmore{order:5}
+ .app .side .nav[data-v=home]{order:1}.app .side .nav[data-v=bills]{order:2}.app .side #ctr{order:3}.app .side .nav[data-v=budgets]{order:4}.app .side .nav[data-v=tax]{order:5}.app .side #navmore{order:6}
  .app .side #ctr{flex:0 0 64px;width:64px;height:64px;border-radius:50%;background:var(--lime);color:#121614}
  .app .side #ctr .i{width:26px;height:26px}
 }
@@ -1158,3 +1158,49 @@ body{background:var(--wash) no-repeat,var(--bg)!important}
 .awel p{margin:clamp(4px,1dvh,10px) 0 clamp(10px,2.5dvh,24px)}
 .abtns{gap:clamp(8px,1.5dvh,12px)}
 .awel small{margin-top:clamp(6px,1.5dvh,18px)}
+
+/* ---- Balance card: hide toggle, trend, and a 4-across action row ---- */
+.lrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lrow .lab{margin:0}
+.beye{width:28px;height:28px;border-radius:50%;background:var(--soft);color:var(--mute);display:grid;place-items:center}
+.beye:hover{color:var(--ink)}
+.btrend{margin-left:auto;font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px}
+.btrend.up{color:var(--good);background:color-mix(in srgb,var(--good) 12%,transparent)}
+.btrend.dn{color:var(--bad);background:var(--bad-soft)}
+.dact4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:20px}
+.dab{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;font-weight:500;color:var(--ink)}
+.dab-i{width:48px;height:48px;border-radius:50%;background:var(--soft);display:grid;place-items:center;color:var(--ink)}
+.dab.p .dab-i{background:var(--forest);color:var(--forest-ink)}
+.dab:hover .dab-i{filter:brightness(.97)}
+@media(max-width:360px){.dab{font-size:11px}.dab-i{width:42px;height:42px}}
+/* a quiet nudge card at the foot of Overview */
+.dcta{display:flex;align-items:center;gap:14px;text-align:left;width:100%;color:var(--ink)}
+.dcta>div{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.dcta b{font-size:16px;font-weight:600}
+.dcta small{font-size:14px;color:var(--mute)}
+.dcta:hover{background:var(--soft)!important}
+
+/* ---- Goals page: one featured hero card, the rest as compact rows ---- */
+.ghero{background:var(--lime)!important;border-color:transparent;color:#14211a;position:relative;overflow:hidden}
+.ghero::after{content:'';position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.22);pointer-events:none}
+.ghh{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;position:relative;z-index:1}
+.gbadge{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 14px;border-radius:99px;background:#1d4a2e;color:#fff;font-size:13px;font-weight:600}
+.ghero .hb{background:rgba(255,255,255,.55);border:0;color:#14211a}
+.gname{display:block;font-size:20px;font-weight:600;margin-bottom:4px}
+.gamt{font-size:28px;font-weight:600;letter-spacing:-.01em;margin-bottom:12px}.gamt span{font-size:16px;font-weight:500;color:#2f4a37}
+.ghero .bar{background:rgba(255,255,255,.5)}
+.gfoot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:#2f4a37}
+.gpc{font-weight:600;background:#fff;border-radius:99px;padding:2px 10px;color:#14211a}
+.ghero .pace{background:rgba(255,255,255,.5);color:#14211a}
+.orows{display:flex;flex-direction:column;gap:4px}
+.orow{padding:14px 4px;border-top:1px solid var(--line)}.orow:first-child{border-top:0}
+.oh{display:flex;align-items:center;gap:12px}
+.oh .on{flex:1;min-width:0;text-align:left;display:flex;flex-direction:column;gap:2px}
+.oh .on b{font-size:16px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.oh .on small{font-size:14px;color:var(--mute)}
+.opc{font-size:13px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--soft);color:var(--mute)}
+.opc.ok{background:color-mix(in srgb,var(--good) 14%,transparent);color:var(--good)}
+
+/* ---- Profile: Sign out stands out as its own pill, like a bank app's Log out ---- */
+.plogout{display:flex;align-items:center;justify-content:center;gap:8px;grid-column:1/-1;height:52px;border-radius:99px!important;background:var(--bad-soft)!important;color:var(--bad);font-size:15px;font-weight:600;padding:0!important}
+.plogout:hover{filter:brightness(.97)}

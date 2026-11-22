@@ -46,10 +46,11 @@ function render(){
  const fab=$('#fab'),fa=view==='bills'&&getPtab()==='debts'?['adddebt','Add debt']:view==='tax'&&getStab()==='track'?['addpay','Log pay']:FAB[view];if(fab){fab.hidden=!fa;if(fa){fab.dataset.act=fa[0];fab.dataset.ty='expense';fab.setAttribute('aria-label',fa[1]);fab.title=fa[1]}}
  // Red dot on the Payables button while anything is overdue or due within 3 days.
  const nb=document.querySelector('.nav[data-v=bills]');if(nb){const n=overdue().length+upcoming(3).length;nb.classList.toggle('alert',n>0);nb.dataset.n=n>9?'9+':n||''}
- const bb=document.querySelector('.nav[data-v=budgets]');if(bb){const d=new Date(),n=budgetAlerts(d.getFullYear(),d.getMonth()).length;bb.classList.toggle('alert',n>0);bb.dataset.n=n>9?'9+':n||''}
- // Phone bar: the centre + does what this page's add button does; More lights up for pages kept in its menu; the bell shows what is due.
+ const budgetN=budgetAlerts(new Date().getFullYear(),new Date().getMonth()).length;
+ const bb=document.querySelector('.nav[data-v=budgets]');if(bb){bb.classList.toggle('alert',budgetN>0);bb.dataset.n=budgetN>9?'9+':budgetN||''}
+ // Phone bar: the centre + does what this page's add button does; More lights up for pages kept in its menu (including its own budget-alert dot, since Budgets lives there on phones); the bell shows what is due.
  const ctr=$('#ctr');if(ctr&&fab){ctr.dataset.act=fab.hidden?'add':fab.dataset.act;if(fab.dataset.ty&&!fab.hidden)ctr.dataset.ty=fab.dataset.ty;else ctr.dataset.ty='expense';ctr.setAttribute('aria-label',fab.hidden?'Add expense':fab.getAttribute('aria-label')||'Add')}
- const mo=$('#navmore');if(mo)mo.classList.toggle('on',['goals','report','tax'].includes(view));
+ const mo=$('#navmore');if(mo){mo.classList.toggle('on',['goals','report','tax','budgets'].includes(view));mo.classList.toggle('alert',budgetN>0);mo.dataset.n=budgetN>9?'9+':budgetN||''}
  document.querySelectorAll('.bellb').forEach(x=>{const n=overdue().length+upcoming(3).length;x.dataset.n=n>9?'9+':n||'';x.setAttribute('aria-label',n?'Payables, '+n+' due soon':'Payables')});
  buildJump();
  main.classList.remove('enter','swap');

@@ -3,7 +3,7 @@ import {now,cur,q,ft,fc,tl,S,isCur,isPast,cat,calc,budgetOf,PAGE,isBalance,incWo
 import {tone,money,topbar,tally,monHtml} from '../ui.js';
 import {monthOcc,overdue,upcoming,label,dateTxt,mkey} from '../bills.js';
 import {budgetAlerts} from '../alerts.js';
-import {spendCard,earnCard,goalCard,insights,balSwitch} from '../dash.js';
+import {spendCard,earnCard,goalCard,insights,balSwitch,toggleBalHidden,isBalHidden,balTrend} from '../dash.js';
 const dayLbl=d=>{const t0=new Date(),y0=new Date(t0.getFullYear(),t0.getMonth(),t0.getDate()-1),k=d.toDateString();return k===t0.toDateString()?'Today':k===y0.toDateString()?'Yesterday':d.getDate()+' '+MN[d.getMonth()]+(d.getFullYear()!==t0.getFullYear()?' '+d.getFullYear():'')};
 // Transaction rows grouped under a day label, the same on Overview and on the history screen.
 function rowsHtml(list){let last='';return list.map(t=>{const c=cat(t.catId),inc=t.type==='income',d=new Date(t.date+'T00:00'),k=d.toDateString(),dl=k!==last?(last=k,'<div class="dh"><span>'+dayLbl(d)+'</span></div>'):'';
@@ -35,19 +35,28 @@ function home(){const s=calc(),bs=balSwitch(s.left);
  const nOd=od.reduce((a,o)=>a+o.rem,0),alertBar=isCur()&&(od.length||soon.length)?`<section class="panel fade alertbar" data-nojump><div class="hrow" style="align-items:center"><div style="display:flex;gap:12px;align-items:center"><span class="tone ico" style="--h:356">${ic('alert')}</span><div><b>${od.length?`${od.length} bill${od.length>1?'s':''} overdue, ${peso(nOd)}`:''}${od.length&&soon.length?' · ':''}${soon.length?`${soon.length} due in the next 3 days`:''}</b><p class="sub" style="margin-top:2px">${[...od,...soon].slice(0,3).map(o=>esc(o.b.name)).join(', ')}${od.length+soon.length>3?' and more':''}</p></div></div><button class="btn sm" data-v2="bills">Review payables</button></div></section>`:'';
  const paidN=bills.filter(o=>o.st==='paid').length;
  const welcome=!S.income&&!S.start.amount&&!S.tx.length&&!S.pay.length?`<section class="panel fade dwide" data-nojump><div class="hrow" style="align-items:center"><div><h2 style="font-size:20px">Welcome to Tally</h2><p class="sub" style="margin-top:4px">How much money are you starting with? Enter a starting amount, or use your salary as your base. Then give each category a budget and log your first expense.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="income">Set starting amount</button><button class="btn g" data-act="usesalary">Use my salary instead</button></div></div></section>`:'';
+ const hidden=isBalHidden(),trend=isBalance()?balTrend(s.open,s.left):null;
+ const balFig=hidden?'₱••••••':(bs.conv?bs.conv.val:money(s.left));
  return topbar('Overview',`${MF[cur.m]} ${cur.y}${isCur()?` · day ${s.day} of ${s.dm}`:''}`)+`<div class="dash fade">${welcome}
  <section class="panel dcard dbal" data-sec="Balance"><div class="dbt">${bs.chips}<span class="mute">${isCur()?`Day ${s.day} of ${s.dm}`:MF[cur.m]+' '+cur.y}</span></div>
-  <div class="lab">${isBalance()?(isCur()?'Your balance':'Balance at month end'):'Left this month'}</div>${bs.conv?`<div class="bal serif">${bs.conv.val}</div><span class="dpill" title="${bs.conv.at||''}">≈ ${peso(s.left)} · ${bs.conv.note}</span>`:`<div class="bal serif" data-count="${s.left}">${money(s.left)}</div>`}
+  <div class="lrow"><div class="lab">${isBalance()?(isCur()?'Your balance':'Balance at month end'):'Left this month'}</div><button class="beye" data-act="balhide" aria-label="${hidden?'Show balance':'Hide balance'}">${ic(hidden?'eyeoff':'eye','sm')}</button>${trend!=null?`<span class="btrend ${trend>=0?'up':'dn'}">${trend>=0?'↑':'↓'} ${Math.abs(trend)}% this month</span>`:''}</div>
+  ${bs.conv&&!hidden?`<div class="bal serif">${balFig}</div><span class="dpill" title="${bs.conv.at||''}">≈ ${peso(s.left)} · ${bs.conv.note}</span>`:`<div class="bal serif" ${hidden?'':`data-count="${s.left}"`}>${hidden?balFig:money(s.left)}</div>`}
   ${isCur()?`<button class="dpill" data-v2="budgets">You can spend <b>${peso(Math.max(0,s.free))}</b> a day${ic('r','sm')}</button>`:`<span class="dpill">Spent ${peso(s.spent)} of ${peso(s.income)}</span>`}
-  <div class="dact"><button class="dbtn p" data-act="add" data-ty="expense">${ic('minus','sm')}Expense</button><button class="dbtn" data-act="add" data-ty="income">${ic('plus','sm')}Income</button><button class="dgo" data-v2="report" aria-label="Open report">${ic('r')}</button></div>
+  <div class="dact4"><button class="dab p" data-act="add" data-ty="expense"><span class="dab-i">${ic('minus')}</span>Expense</button><button class="dab" data-act="add" data-ty="income"><span class="dab-i">${ic('plus')}</span>Income</button><button class="dab" data-v2="report"><span class="dab-i">${ic('chart')}</span>Report</button><button class="dab" data-act="csv"><span class="dab-i">${ic('down')}</span>Export</button></div>
   <div class="dmeta"><button data-act="income" aria-label="Edit starting amount or salary">${incWord()} <b>${peso(s.income)}</b>${ic('edit','sm')}</button>${isBalance()?`<span>Money in <b>${peso(s.inflow)}</b></span>`:''}<span>${isCur()?'On pace for':'Spent'} <b>${peso(s.proj)}</b></span></div></section>
  ${goalCard()}
  ${alertBar}${budgetBar()}
  ${insights()}
  ${spendCard()}
  ${earnCard()}
- <section class="panel dcard dtx fade" data-sec="Transactions"><div class="dh2"><span class="dic">${ic('in')}</span><h2>Transactions</h2><button class="va" data-v2="history">View all${ic('r','sm')}</button></div><div id="htx">${rowsHtml(s.tx.slice().sort(byDate).slice(0,5))||`<div class="empty">${ic('wallet','lg')}No transactions in ${MF[cur.m]} yet.</div>`}</div></section>
+ <section class="panel dcard dtx fade" data-sec="Transactions"><div class="dh2"><span class="dic">${ic('in')}</span><h2>Recent Transactions</h2><button class="va" data-v2="history">See All</button></div><div id="htx">${rowsHtml(s.tx.slice().sort(byDate).slice(0,5))||`<div class="empty">${ic('wallet','lg')}No transactions in ${MF[cur.m]} yet.</div>`}</div></section>
  <section class="panel dcard dbills" data-sec="Bills"><div class="dh2"><span class="dic">${ic('cal')}</span><h2>Bills this month</h2><div class="scs">${tally(paidN,bills.length,paidN+' of '+bills.length+' bills paid')}<button class="scb" data-sc="-1" aria-label="Scroll bills left">${ic('l','sm')}</button><button class="scb" data-sc="1" aria-label="Scroll bills right">${ic('r','sm')}</button></div></div><div class="tpls">${bills.map(o=>{const c=cat(o.b.catId),late=o.st==='late';return `<button class="tpl ${o.st==='paid'?'done':''}" style="--h:${c.hue}" data-pay="${o.b.id}|${o.key}"><div class="t">${tone(c.hue,c.icon)}<div style="min-width:0"><b>${esc(o.b.name)}</b><span class="st ${late?'late':''}">${ic(o.st==='paid'?'check':late?'alert':'cal','sm')}${label(o)}</span></div></div><div class="f"><span>${dateTxt(o.date)}</span><b>${peso(o.rem>0?o.rem:o.amt)}</b></div></button>`}).join('')}<button class="tpl tnew" data-act="addbill">${ic('plus','lg')}<span>New bill</span></button></div></section>
+ ${ctaBanner()}
  </div>`}
+// A quiet nudge card at the bottom of Overview, like a bank app's "build a habit" prompt.
+function ctaBanner(){
+ const open=S.goals.filter(g=>g.saved<g.target).length;
+ if(S.goals.length)return `<button class="panel dcta" data-v2="goals"><span class="dic">${ic('target')}</span><div><b>Keep building your goals</b><small>${open} goal${open===1?'':'s'} still in progress</small></div>${ic('r')}</button>`;
+ return `<button class="panel dcta" data-v2="goals"><span class="dic">${ic('target')}</span><div><b>Save smarter</b><small>Set a goal, build your future</small></div>${ic('r')}</button>`}
 export {home,txPart,history,rangeSub};
 

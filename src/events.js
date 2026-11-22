@@ -135,3 +135,4 @@ document.addEventListener('click',e=>{
 
 // Balance currency switch on Overview.
 document.addEventListener('click',e=>{const b=e.target.closest('[data-bcur]');if(!b)return;import('./dash.js').then(m=>{m.setBalCur(b.dataset.bcur);render()})});
+document.addEventListener('click',e=>{if(!e.target.closest('[data-act="balhide"]'))return;import('./dash.js').then(m=>{m.toggleBalHidden();render()})});

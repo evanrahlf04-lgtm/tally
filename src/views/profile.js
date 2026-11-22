@@ -25,6 +25,7 @@ function profile(){
  </section>
  <section class="panel plist" data-nojump><h2>Account</h2>
   ${row('data-act="reset"','x','Reset everything','','danger')}
-  ${row('data-act="signout"','logout','Sign out','','danger')}
- </section></div>`}
+ </section>
+ <button class="panel plogout" data-act="signout">${ic('logout','sm')}Sign out</button>
+ </div>`}
 export {profile};
