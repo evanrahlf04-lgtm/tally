@@ -3,7 +3,7 @@ import {view,cur,user} from './state.js';
 import {needsSetup,showSetup} from './setup.js';
 import {money} from './ui.js';
 import {buildJump} from './jump.js';
-import {home} from './views/home.js';
+import {home,history} from './views/home.js';
 import {salary,getStab} from './views/salary.js';
 import {budgets} from './views/budgets.js';
 import {goals} from './views/goals.js';
@@ -13,8 +13,8 @@ import {overdue,upcoming} from './bills.js';
 import {budgetAlerts} from './alerts.js';
 
 // The floating button always does the most useful add for the page you are on.
-const FAB={bills:['addbill','Add bill'],home:['add','Add expense'],report:['add','Add expense'],budgets:['addcat','Add category'],goals:['addgoal','Add goal']};
-const views={home,bills,budgets,goals,report:analytics,tax:salary};
+const FAB={bills:['addbill','Add bill'],home:['add','Add expense'],history:['add','Add expense'],report:['add','Add expense'],budgets:['addcat','Add category'],goals:['addgoal','Add goal']};
+const views={home,history,bills,budgets,goals,report:analytics,tax:salary};
 const still=()=>matchMedia('(prefers-reduced-motion:reduce)').matches;
 let lastView=null,lastMonth=null,raf=0;
 
@@ -46,6 +46,10 @@ function render(){
  // Red dot on the Payables button while anything is overdue or due within 3 days.
  const nb=document.querySelector('.nav[data-v=bills]');if(nb){const n=overdue().length+upcoming(3).length;nb.classList.toggle('alert',n>0);nb.dataset.n=n>9?'9+':n||''}
  const bb=document.querySelector('.nav[data-v=budgets]');if(bb){const d=new Date(),n=budgetAlerts(d.getFullYear(),d.getMonth()).length;bb.classList.toggle('alert',n>0);bb.dataset.n=n>9?'9+':n||''}
+ // Phone bar: the centre + does what this page's add button does; More lights up for pages kept in its menu; the bell shows what is due.
+ const ctr=$('#ctr');if(ctr&&fab){ctr.dataset.act=fab.hidden?'add':fab.dataset.act;if(fab.dataset.ty&&!fab.hidden)ctr.dataset.ty=fab.dataset.ty;else ctr.dataset.ty='expense';ctr.setAttribute('aria-label',fab.hidden?'Add expense':fab.getAttribute('aria-label')||'Add')}
+ const mo=$('#navmore');if(mo)mo.classList.toggle('on',['goals','report','tax'].includes(view));
+ document.querySelectorAll('.bellb').forEach(x=>{const n=overdue().length+upcoming(3).length;x.dataset.n=n>9?'9+':n||'';x.setAttribute('aria-label',n?'Payables, '+n+' due soon':'Payables')});
  buildJump();
  main.classList.remove('enter','swap');
  if(kind){void main.offsetWidth;main.classList.add(kind);countUp(main)}

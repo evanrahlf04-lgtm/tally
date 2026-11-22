@@ -103,4 +103,17 @@ document.addEventListener('focusin',e=>{if(typingEl(e))document.body.classList.a
 document.addEventListener('focusout',e=>{if(typingEl(e))setTimeout(()=>{if(!typingEl({target:document.activeElement}))document.body.classList.remove('typing')},50)});
 
 // Type chips above the transaction list (All, Expenses, Income).
-document.addEventListener('click',e=>{const b=e.target.closest('[data-ftc]');if(!b)return;setFt(b.dataset.ftc);setTl(PAGE());document.querySelectorAll('#ftc button').forEach(x=>x.classList.toggle('on',x===b));refreshList()});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-ftc]');if(b){const v=b.dataset.ftc;if(v.startsWith('c:')){setFt('all');setFc(v.slice(2))}else{setFt(v);setFc('all')}setTl(PAGE());document.querySelectorAll('#ftc button').forEach(x=>x.classList.toggle('on',x===b));return refreshList()}
+ if(e.target.closest('#hsearch')){const s=document.querySelector('.hsrch');if(s){s.hidden=!s.hidden;if(!s.hidden)s.querySelector('input').focus()}}});
+
+// Number pad in the add-transaction sheet.
+document.addEventListener('click',e=>{const k=e.target.closest('[data-kp],[data-kq]');if(!k)return;const i=document.querySelector('#sh [name=a]');if(!i)return;
+ let v=i.dataset.kv!=null?i.dataset.kv:i.value;
+ if(k.dataset.kq)v=k.dataset.kq;
+ else{const d=k.dataset.kp;
+  if(d==='del')v=v.slice(0,-1);
+  else if(d==='.'){if(!v.includes('.'))v=(v||'0')+'.'}
+  else{if(/\.\d\d$/.test(v)||v.replace('.','').length>=10)return;v=v==='0'?d:v+d}}
+ // A number field drops a trailing point, so the typed text is kept separately until the next digit.
+ i.dataset.kv=v;i.value=v.endsWith('.')?v.slice(0,-1):v;i.dispatchEvent(new Event('input',{bubbles:true}))});
+document.addEventListener('input',e=>{if(e.isTrusted&&e.target.matches&&e.target.matches('#sh [name=a]'))delete e.target.dataset.kv});
